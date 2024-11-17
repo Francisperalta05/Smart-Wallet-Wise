@@ -5,7 +5,7 @@ import 'package:smart_wallet_wise/bloc/transaction_bloc.dart';
 import 'views/transacion_list.dart';
 
 void main() {
-  runApp(MyFinanceApp());
+  runApp(const MyFinanceApp());
 }
 
 class MyFinanceApp extends StatelessWidget {

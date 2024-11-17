@@ -1,5 +1,10 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart'; // Importa el paquete intl
+import 'package:smart_wallet_wise/extensions/sizer.dart';
+import 'package:smart_wallet_wise/models/transaction.dart';
+import 'dart:io'; // Para detectar la plataforma (Android o iOS)
 
 import '../bloc/transaction_bloc.dart';
 import 'add_transacion.dart';
@@ -11,22 +16,22 @@ class TransactionList extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(60.0),
+        preferredSize: Size.fromHeight(60.0),
         child: AppBar(
           flexibleSpace: Container(
             decoration: BoxDecoration(
               gradient: LinearGradient(
-                colors: [Colors.blueGrey[900]!, Colors.grey[850]!],
+                colors: [Color(0xFF263238), Color(0xFF303030)],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
             ),
           ),
-          title: const Text(
+          title: Text(
             'Mis Finanzas',
             style: TextStyle(
               fontWeight: FontWeight.bold,
-              fontSize: 22,
+              fontSize: 22.w,
             ),
           ),
           centerTitle: true,
@@ -46,7 +51,8 @@ class TransactionList extends StatelessWidget {
             ),
           ),
           BlocProvider(
-            create: (_) => TransactionBloc()..add(LoadTransactions()),
+            create: (_) =>
+                context.read<TransactionBloc>()..add(LoadTransactions()),
             child: Column(
               children: [
                 // Balance Resumen
@@ -58,16 +64,16 @@ class TransactionList extends StatelessWidget {
                           .fold(0.0, (sum, item) => sum + item.amount);
 
                       return Container(
-                        padding: const EdgeInsets.all(20.0),
+                        padding: EdgeInsets.all(20.0),
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
                             colors: [Colors.blueGrey[900]!, Colors.grey[850]!],
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
                           ),
-                          borderRadius: const BorderRadius.vertical(
+                          borderRadius: BorderRadius.vertical(
                               bottom: Radius.circular(30)),
-                          boxShadow: const [
+                          boxShadow: [
                             BoxShadow(
                               color: Colors.black54,
                               blurRadius: 10,
@@ -82,19 +88,19 @@ class TransactionList extends StatelessWidget {
                               'Balance Total',
                               style: TextStyle(
                                 color: Colors.grey[400],
-                                fontSize: 18,
+                                fontSize: 18.w,
                               ),
                             ),
-                            const SizedBox(height: 8),
+                            SizedBox(height: 8.h),
                             Text(
                               '\$${totalBalance.toStringAsFixed(2)}',
-                              style: const TextStyle(
+                              style: TextStyle(
                                 color: Colors.white,
-                                fontSize: 36,
+                                fontSize: 36.w,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
-                            const SizedBox(height: 10),
+                            SizedBox(height: 10.h),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
@@ -123,7 +129,7 @@ class TransactionList extends StatelessWidget {
                     return CircularProgressIndicator.adaptive();
                   },
                 ),
-                const SizedBox(height: 20),
+                SizedBox(height: 20.h),
                 // Lista de Transacciones
                 Expanded(
                   child: BlocBuilder<TransactionBloc, TransactionState>(
@@ -131,53 +137,117 @@ class TransactionList extends StatelessWidget {
                       if (state is TransactionsLoaded) {
                         return ListView.builder(
                           itemCount: state.transactions.length,
-                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          padding: EdgeInsets.symmetric(horizontal: 16.w),
                           itemBuilder: (context, index) {
                             final transaction = state.transactions[index];
                             bool isExpense = transaction.amount < 0;
 
+                            // Formatear la fecha usando intl
+                            String formattedDate = DateFormat('dd MMM yyyy')
+                                .format(transaction.date);
+
+                            // Descripción truncada
+                            String description =
+                                transaction.description.length > 50
+                                    ? transaction.description.substring(0, 50) +
+                                        '...'
+                                    : transaction.description;
+
                             return Card(
-                              color: Colors.grey[850],
-                              margin: const EdgeInsets.only(bottom: 12),
-                              elevation: 4,
+                              margin: EdgeInsets.only(bottom: 12.h),
+                              elevation: 8, // Sombra más fuerte
                               shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(15),
+                                borderRadius: BorderRadius.circular(20),
                               ),
-                              child: ListTile(
-                                leading: Container(
-                                  padding: const EdgeInsets.all(10),
-                                  decoration: BoxDecoration(
-                                    color:
-                                        isExpense ? Colors.red : Colors.green,
-                                    shape: BoxShape.circle,
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  gradient: LinearGradient(
+                                    colors: [
+                                      Colors.grey[850]!,
+                                      Colors.grey[800]!,
+                                    ],
+                                    begin: Alignment.topLeft,
+                                    end: Alignment.bottomRight,
                                   ),
-                                  child: Icon(
-                                    isExpense
-                                        ? Icons.arrow_downward
-                                        : Icons.arrow_upward,
-                                    color: Colors.white,
-                                    size: 20,
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                child: ListTile(
+                                  contentPadding: EdgeInsets.symmetric(
+                                      vertical: 12.w, horizontal: 12.h),
+                                  leading: Container(
+                                    padding: EdgeInsets.all(12.w),
+                                    decoration: BoxDecoration(
+                                      color:
+                                          isExpense ? Colors.red : Colors.green,
+                                      shape: BoxShape.circle,
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.black45,
+                                          blurRadius: 10,
+                                          offset: Offset(0, 4),
+                                        ),
+                                      ],
+                                    ),
+                                    child: Icon(
+                                      isExpense
+                                          ? Icons.arrow_downward
+                                          : Icons.arrow_upward,
+                                      color: Colors.white,
+                                      size: 28,
+                                    ),
                                   ),
-                                ),
-                                title: Text(
-                                  transaction.title,
-                                  style: const TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w600,
-                                    color: Colors.white,
+                                  title: Text(
+                                    transaction.title,
+                                    style: TextStyle(
+                                      fontSize: 18.w,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white,
+                                    ),
                                   ),
-                                ),
-                                subtitle: Text(
-                                  "${transaction.date}",
-                                  style: TextStyle(color: Colors.grey[400]),
-                                ),
-                                trailing: Text(
-                                  '\$${transaction.amount.toStringAsFixed(2)}',
-                                  style: TextStyle(
-                                    color:
-                                        isExpense ? Colors.red : Colors.green,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 16,
+                                  subtitle: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        formattedDate, // Fecha formateada
+                                        style: TextStyle(
+                                          color: Colors.grey[400],
+                                          fontSize: 14.w,
+                                        ),
+                                      ),
+                                      SizedBox(height: 5.h),
+                                      Text(
+                                        description, // Descripción truncada
+                                        style: TextStyle(
+                                          color: Colors.grey[300],
+                                          fontSize: 14.w,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  trailing: Column(
+                                    children: [
+                                      Text(
+                                        '\$${transaction.amount.toStringAsFixed(2)}',
+                                        style: TextStyle(
+                                          color: isExpense
+                                              ? Colors.red
+                                              : Colors.green,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 18.w,
+                                        ),
+                                      ),
+                                      IconButton(
+                                        icon: Icon(
+                                          Icons.delete,
+                                          color: Colors.grey,
+                                        ),
+                                        onPressed: () {
+                                          _showDeleteConfirmationDialog(
+                                              context, transaction);
+                                        },
+                                      ),
+                                    ],
                                   ),
                                 ),
                               ),
@@ -187,7 +257,7 @@ class TransactionList extends StatelessWidget {
                       } else if (state is TransactionError) {
                         return Center(child: Text(state.message));
                       } else {
-                        return const Center(child: CircularProgressIndicator());
+                        return Center(child: CircularProgressIndicator());
                       }
                     },
                   ),
@@ -218,13 +288,12 @@ class TransactionList extends StatelessWidget {
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
-            // shape: BoxShape.circle, // Mantener la forma circular del botón
           ),
           child: Padding(
-            padding: const EdgeInsets.all(14.0),
-            child: const Icon(
+            padding: EdgeInsets.all(14.0),
+            child: Icon(
               Icons.add,
-              size: 28,
+              size: 28.w,
               color: Colors
                   .white, // Ícono blanco para destacarlo sobre el fondo oscuro
             ),
@@ -234,15 +303,70 @@ class TransactionList extends StatelessWidget {
     );
   }
 
+  void _showDeleteConfirmationDialog(
+      BuildContext context, TransactionModel transaction) {
+    // Muestra un diálogo de confirmación antes de borrar
+    showDialog(
+      context: context,
+      builder: (context) {
+        return Platform.isAndroid
+            ? AlertDialog(
+                title: Text("Eliminar Transacción"),
+                content: Text(
+                    "¿Estás seguro de que deseas eliminar esta transacción?"),
+                actions: <Widget>[
+                  TextButton(
+                    child: Text("Cancelar"),
+                    onPressed: () {
+                      Navigator.of(context).pop(); // Cierra el diálogo
+                    },
+                  ),
+                  TextButton(
+                    child: Text("Eliminar"),
+                    onPressed: () {
+                      context
+                          .read<TransactionBloc>()
+                          .add(DeleteTransaction(transaction.id!));
+                      Navigator.of(context).pop(); // Cierra el diálogo
+                    },
+                  ),
+                ],
+              )
+            : CupertinoAlertDialog(
+                title: Text("Eliminar Transacción"),
+                content: Text(
+                    "¿Estás seguro de que deseas eliminar esta transacción?"),
+                actions: <Widget>[
+                  CupertinoDialogAction(
+                    child: Text("Cancelar"),
+                    onPressed: () {
+                      Navigator.of(context).pop(); // Cierra el diálogo
+                    },
+                  ),
+                  CupertinoDialogAction(
+                    child: Text("Eliminar"),
+                    onPressed: () {
+                      context
+                          .read<TransactionBloc>()
+                          .add(DeleteTransaction(transaction.id!));
+                      Navigator.of(context).pop(); // Cierra el diálogo
+                    },
+                  ),
+                ],
+              );
+      },
+    );
+  }
+
   Widget _buildSummaryCard(
       {required String title, required double amount, required Color color}) {
     return Container(
       width: 150,
-      padding: const EdgeInsets.all(15),
+      padding: EdgeInsets.all(15),
       decoration: BoxDecoration(
         color: Colors.grey[900],
         borderRadius: BorderRadius.circular(15),
-        boxShadow: const [
+        boxShadow: [
           BoxShadow(
             color: Colors.black26,
             blurRadius: 10,
@@ -260,13 +384,13 @@ class TransactionList extends StatelessWidget {
               fontSize: 14,
             ),
           ),
-          const SizedBox(height: 5),
+          SizedBox(height: 5),
           Text(
             '\$${amount.toStringAsFixed(2)}',
             style: TextStyle(
               color: color,
               fontWeight: FontWeight.bold,
-              fontSize: 20,
+              fontSize: 20.w,
             ),
           ),
         ],

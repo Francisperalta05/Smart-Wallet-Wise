@@ -1,5 +1,5 @@
-package com.example.smart_wallet_wise
+package com.SmartWalletWise.angel
 
 import io.flutter.embedding.android.FlutterActivity
 
-class MainActivity: FlutterActivity()
+class MainActivity : FlutterActivity()

@@ -58,6 +58,7 @@ class AddTransactionScreen extends StatelessWidget {
                   const SizedBox(height: 8),
                   TextFormField(
                     controller: titleController,
+                    textCapitalization: TextCapitalization.sentences,
                     style: const TextStyle(color: Colors.white),
                     decoration: InputDecoration(
                       filled: true,
@@ -189,6 +190,7 @@ class AddTransactionScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   TextFormField(
+                    textCapitalization: TextCapitalization.sentences,
                     controller: descriptionController,
                     maxLines: 3,
                     style: const TextStyle(color: Colors.white),
