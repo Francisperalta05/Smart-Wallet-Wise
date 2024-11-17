@@ -26,8 +26,8 @@ Para ejecutar esta aplicación, necesitarás tener instalado el siguiente softwa
 
 ### Versiones de las Herramientas
 
-- **Flutter**: `3.13.0` (última versión estable disponible)
-- **Dart**: `3.13.0` (última versión estable de Dart)
+- **Flutter**: `3.24.4` (última versión estable disponible)
+- **Dart**: `3.5.4` (última versión estable de Dart)
 
 ### Instalar Flutter
 
