@@ -7,11 +7,13 @@ class DatabaseHelper {
   static final DatabaseHelper instance = DatabaseHelper._init();
   static Database? _database;
 
+  final String tableName = "gastos";
+
   DatabaseHelper._init();
 
   Future<Database> get database async {
     if (_database != null) return _database!;
-    _database = await _initDB('transactions.db');
+    _database = await _initDB('gastos.db');
     return _database!;
   }
 
@@ -23,27 +25,35 @@ class DatabaseHelper {
 
   Future _onCreate(Database db, int version) async {
     await db.execute('''
-    CREATE TABLE IF NOT EXISTS transactions(
+    CREATE TABLE IF NOT EXISTS $tableName(
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       title TEXT,
       amount REAL,
       date TEXT,
       description TEXT,
-      type TEXT
-    )
+      type TEXT,
+      category TEXT
+      )
     ''');
   }
 
   // Insertar una nueva transacción
   Future<int> addTransaction(TransactionModel transaction) async {
     final db = await database;
-    return await db.insert('transactions', transaction.toMap());
+    return await db.insert(
+      tableName,
+      transaction.toMap(),
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
   }
 
   // Obtener todas las transacciones
   Future<List<TransactionModel>> getTransactions() async {
     final db = await database;
-    final maps = await db.query('transactions');
+    final maps = await db.query(
+      tableName,
+      orderBy: 'date ASC',
+    );
     return List.generate(maps.length, (i) {
       return TransactionModel.fromMap(maps[i]);
     });
@@ -53,7 +63,7 @@ class DatabaseHelper {
   Future<List<TransactionModel>> getTransactionsByType(String type) async {
     final db = await database;
     final maps =
-        await db.query('transactions', where: 'type = ?', whereArgs: [type]);
+        await db.query(tableName, where: 'type = ?', whereArgs: [type]);
     return List.generate(maps.length, (i) {
       return TransactionModel.fromMap(maps[i]);
     });
@@ -62,13 +72,13 @@ class DatabaseHelper {
   // Actualizar una transacción
   Future<int> updateTransaction(TransactionModel transaction) async {
     final db = await database;
-    return await db.update('transactions', transaction.toMap(),
+    return await db.update(tableName, transaction.toMap(),
         where: 'id = ?', whereArgs: [transaction.id]);
   }
 
   // Eliminar una transacción
   Future<int> deleteTransaction(int id) async {
     final db = await database;
-    return await db.delete('transactions', where: 'id = ?', whereArgs: [id]);
+    return await db.delete(tableName, where: 'id = ?', whereArgs: [id]);
   }
 }

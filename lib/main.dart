@@ -4,7 +4,9 @@ import 'package:smart_wallet_wise/bloc/transaction_bloc.dart';
 
 import 'views/transacion_list.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Future.delayed(Durations.medium4);
   runApp(const MyFinanceApp());
 }
 

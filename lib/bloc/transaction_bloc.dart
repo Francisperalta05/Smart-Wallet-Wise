@@ -24,7 +24,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       final transactions = await _dbHelper.getTransactions();
       emit(TransactionsLoaded(transactions)); // Actualizar el estado
     } catch (e) {
-      emit(TransactionError('Error al cargar las transacciones.'));
+      emit(TransactionError('Error al cargar las transacciones. $e'));
     }
   }
 
@@ -37,7 +37,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       Future.delayed(Durations.medium4, () => add(LoadTransactions()));
       // Recargar las transacciones después de agregar
     } catch (e) {
-      emit(TransactionError('Error al agregar la transacción.'));
+      emit(TransactionError('Error al agregar la transacción. $e'));
     }
   }
 

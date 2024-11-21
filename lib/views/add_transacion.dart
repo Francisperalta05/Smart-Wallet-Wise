@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
 import '../bloc/transaction_bloc.dart';
 import '../models/transaction.dart';
 
@@ -11,6 +10,18 @@ class AddTransactionScreen extends StatelessWidget {
   final TextEditingController descriptionController = TextEditingController();
   String transactionType = "Ingreso"; // Valor predeterminado
   DateTime selectedDate = DateTime.now();
+  String selectedCategory =
+      'Alimentación'; // Categoria seleccionada por defecto
+
+  // Definir las categorías predefinidas
+  final List<String> categories = [
+    'Alimentación',
+    'Transporte',
+    'Entretenimiento',
+    'Salud',
+    'Renta',
+    'Otros',
+  ];
 
   AddTransactionScreen({super.key});
 
@@ -143,6 +154,38 @@ class AddTransactionScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 16),
 
+                  // Campo Categoría
+                  Text(
+                    'Categoría',
+                    style: Theme.of(context).textTheme.titleLarge,
+                  ),
+                  const SizedBox(height: 8),
+                  DropdownButtonFormField<String>(
+                    value: selectedCategory,
+                    dropdownColor: Colors.grey[850],
+                    style: const TextStyle(color: Colors.white),
+                    decoration: InputDecoration(
+                      filled: true,
+                      fillColor: Colors.grey[850],
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide.none,
+                      ),
+                    ),
+                    items: categories
+                        .map((category) => DropdownMenuItem(
+                              value: category,
+                              child: Text(category),
+                            ))
+                        .toList(),
+                    onChanged: (value) {
+                      if (value != null) {
+                        selectedCategory = value;
+                      }
+                    },
+                  ),
+                  const SizedBox(height: 16),
+
                   // Campo Fecha
                   Text(
                     'Fecha',
@@ -250,6 +293,7 @@ class AddTransactionScreen extends StatelessWidget {
         date: selectedDate,
         description: descriptionController.text,
         type: transactionType,
+        category: selectedCategory, // Pasar la categoría seleccionada
       );
 
       // Pasar la transacción al BLoC

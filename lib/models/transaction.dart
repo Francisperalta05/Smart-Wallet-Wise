@@ -5,6 +5,7 @@ class TransactionModel {
   DateTime date;
   String description;
   String type; // "Ingreso" o "Gasto"
+  final String category;
 
   TransactionModel({
     this.id,
@@ -13,6 +14,7 @@ class TransactionModel {
     required this.date,
     this.description = "",
     required this.type,
+    required this.category,
   });
 
   // Convertir de un mapa de la base de datos a un objeto Transaction
@@ -24,6 +26,7 @@ class TransactionModel {
       date: DateTime.parse(map['date']),
       description: map['description'],
       type: map['type'],
+      category: map['category'], // Añadimos la categoría
     );
   }
 
@@ -36,6 +39,7 @@ class TransactionModel {
       'date': date.toIso8601String(),
       'description': description,
       'type': type,
+      'category': category,
     };
   }
 }

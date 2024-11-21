@@ -8,6 +8,7 @@ import 'dart:io'; // Para detectar la plataforma (Android o iOS)
 
 import '../bloc/transaction_bloc.dart';
 import 'add_transacion.dart';
+import 'average_screen.dart';
 
 class TransactionList extends StatelessWidget {
   TransactionList({super.key});
@@ -16,7 +17,7 @@ class TransactionList extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: PreferredSize(
-        preferredSize: Size.fromHeight(60.0),
+        preferredSize: Size.fromHeight(50.h),
         child: AppBar(
           flexibleSpace: Container(
             decoration: BoxDecoration(
@@ -44,7 +45,11 @@ class TransactionList extends StatelessWidget {
           Container(
             decoration: BoxDecoration(
               gradient: LinearGradient(
-                colors: [Colors.black, Colors.grey[900]!, Colors.grey[800]!],
+                colors: [
+                  Colors.black,
+                  const Color(0xFF212121),
+                  Color(0xFF424242)
+                ],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
@@ -105,6 +110,15 @@ class TransactionList extends StatelessWidget {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 _buildSummaryCard(
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            ExpenseChartScreen(isIncome: true),
+                                      ),
+                                    );
+                                  },
                                   title: 'Ingresos',
                                   amount: state.transactions
                                       .where((tx) => tx.amount > 0)
@@ -113,6 +127,15 @@ class TransactionList extends StatelessWidget {
                                   color: Colors.green,
                                 ),
                                 _buildSummaryCard(
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            ExpenseChartScreen(isIncome: false),
+                                      ),
+                                    );
+                                  },
                                   title: 'Gastos',
                                   amount: state.transactions
                                       .where((tx) => tx.amount < 0)
@@ -358,42 +381,49 @@ class TransactionList extends StatelessWidget {
     );
   }
 
-  Widget _buildSummaryCard(
-      {required String title, required double amount, required Color color}) {
-    return Container(
-      width: 150,
-      padding: EdgeInsets.all(15),
-      decoration: BoxDecoration(
-        color: Colors.grey[900],
-        borderRadius: BorderRadius.circular(15),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black26,
-            blurRadius: 10,
-            offset: Offset(0, 5),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            title,
-            style: TextStyle(
-              color: Colors.grey[400],
-              fontSize: 14,
+  Widget _buildSummaryCard({
+    required String title,
+    required double amount,
+    required Color color,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: 150.w,
+        padding: EdgeInsets.all(15),
+        decoration: BoxDecoration(
+          color: Colors.grey[900],
+          borderRadius: BorderRadius.circular(15),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black26,
+              blurRadius: 10,
+              offset: Offset(0, 5),
             ),
-          ),
-          SizedBox(height: 5),
-          Text(
-            '\$${amount.toStringAsFixed(2)}',
-            style: TextStyle(
-              color: color,
-              fontWeight: FontWeight.bold,
-              fontSize: 20.w,
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              title,
+              style: TextStyle(
+                color: Colors.grey[400],
+                fontSize: 14.w,
+              ),
             ),
-          ),
-        ],
+            SizedBox(height: 5.h),
+            Text(
+              '\$${amount.toStringAsFixed(2)}',
+              style: TextStyle(
+                color: color,
+                fontWeight: FontWeight.bold,
+                fontSize: 20.w,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
