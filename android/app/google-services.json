@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "755628758342",
+    "project_id": "smart-wallet-wise",
+    "storage_bucket": "smart-wallet-wise.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:755628758342:android:71d798e5caeb826efb8147",
+        "android_client_info": {
+          "package_name": "com.SmartWalletWise.angel"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBybTbaGdlena35OuZm0vydilFVbG4H-LM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,9 +1,7 @@
-import 'dart:developer';
-
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:intl/intl.dart'; // Asegúrate de tener esta dependencia en pubspec.yaml
+import 'package:intl/intl.dart';
 import 'package:smart_wallet_wise/extensions/sizer.dart';
 import '../bloc/transaction_bloc.dart';
 import '../models/transaction.dart';
@@ -18,8 +16,7 @@ class ExpenseChartScreen extends StatefulWidget {
 }
 
 class _ExpenseChartScreenState extends State<ExpenseChartScreen> {
-  String selectedPeriod =
-      'Diario'; // Inicializamos con 'Diario' como valor predeterminado
+  String selectedPeriod = 'Diario'; // Inicializamos con 'Diario' por defecto
   late Map<String, dynamic> data;
 
   @override
@@ -33,10 +30,11 @@ class _ExpenseChartScreenState extends State<ExpenseChartScreen> {
 
   Map<String, dynamic> _calculateData(List<TransactionModel> transactions) {
     final now = DateTime.now();
-    List<BarChartGroupData> barChartData = [];
+    List<FlSpot> lineChartData = [];
     List<String> titles = [];
     double maxY = 0;
 
+    // Diariamente
     if (selectedPeriod == 'Diario') {
       final Map<int, double> dailyData = {};
       for (var transaction in transactions) {
@@ -46,31 +44,20 @@ class _ExpenseChartScreenState extends State<ExpenseChartScreen> {
           final diff = now.difference(transaction.date).inDays;
 
           if (diff < 5) {
-            // Considerar solo los últimos 5 días
+            // Solo los últimos 5 días
             dailyData[day] = (dailyData[day] ?? 0) + transaction.amount.abs();
           }
         }
       }
 
       dailyData.forEach((day, amount) {
-        barChartData.add(
-          BarChartGroupData(
-            x: day,
-            barRods: [
-              BarChartRodData(
-                toY: amount,
-                color: Colors.blueAccent,
-                width: 15,
-                borderRadius: BorderRadius.circular(30),
-              ),
-            ],
-            // showingTooltipIndicators: [0],
-          ),
-        );
+        lineChartData.add(FlSpot(day.toDouble(), amount));
         titles.add(day.toString());
         maxY = maxY < amount ? amount : maxY;
       });
-    } else if (selectedPeriod == 'Semanal') {
+    }
+    // Semanalmente
+    else if (selectedPeriod == 'Semanal') {
       final Map<int, double> weeklyData = {};
       for (var transaction in transactions) {
         if ((widget.isIncome && transaction.amount > 0) ||
@@ -79,7 +66,7 @@ class _ExpenseChartScreenState extends State<ExpenseChartScreen> {
           final diff = now.difference(transaction.date).inDays;
 
           if (diff < 28) {
-            // Considerar solo las últimas 4 semanas
+            // Solo las últimas 4 semanas
             weeklyData[week] =
                 (weeklyData[week] ?? 0) + transaction.amount.abs();
           }
@@ -87,24 +74,13 @@ class _ExpenseChartScreenState extends State<ExpenseChartScreen> {
       }
 
       weeklyData.forEach((week, amount) {
-        barChartData.add(
-          BarChartGroupData(
-            x: week,
-            barRods: [
-              BarChartRodData(
-                toY: amount,
-                color: Colors.blueAccent,
-                width: 15,
-                borderRadius: BorderRadius.circular(30),
-              ),
-            ],
-            // showingTooltipIndicators: [0],
-          ),
-        );
+        lineChartData.add(FlSpot(week.toDouble(), amount));
         titles.add('Semana $week');
         maxY = maxY < amount ? amount : maxY;
       });
-    } else if (selectedPeriod == 'Mensual') {
+    }
+    // Mensualmente
+    else if (selectedPeriod == 'Mensual') {
       final Map<int, double> monthlyData = {};
       for (var transaction in transactions) {
         if ((widget.isIncome && transaction.amount > 0) ||
@@ -113,7 +89,7 @@ class _ExpenseChartScreenState extends State<ExpenseChartScreen> {
           final diff = now.difference(transaction.date).inDays;
 
           if (diff < 90) {
-            // Considerar solo los últimos 3 meses
+            // Solo los últimos 3 meses
             monthlyData[month] =
                 (monthlyData[month] ?? 0) + transaction.amount.abs();
           }
@@ -121,24 +97,13 @@ class _ExpenseChartScreenState extends State<ExpenseChartScreen> {
       }
 
       monthlyData.forEach((month, amount) {
-        barChartData.add(
-          BarChartGroupData(
-            x: month,
-            barRods: [
-              BarChartRodData(
-                toY: amount,
-                color: Colors.blueAccent,
-                width: 15,
-                borderRadius: BorderRadius.circular(30),
-              ),
-            ],
-            // showingTooltipIndicators: [0],
-          ),
-        );
+        lineChartData.add(FlSpot(month.toDouble(), amount));
         titles.add(_monthName(month));
         maxY = maxY < amount ? amount : maxY;
       });
-    } else if (selectedPeriod == 'Anual') {
+    }
+    // Anualmente
+    else if (selectedPeriod == 'Anual') {
       final Map<int, double> yearlyData = {};
       for (var transaction in transactions) {
         if ((widget.isIncome && transaction.amount > 0) ||
@@ -147,7 +112,7 @@ class _ExpenseChartScreenState extends State<ExpenseChartScreen> {
           final diff = now.difference(transaction.date).inDays;
 
           if (diff < 365) {
-            // Considerar solo el último año
+            // Solo el último año
             yearlyData[year] =
                 (yearlyData[year] ?? 0) + transaction.amount.abs();
           }
@@ -155,26 +120,13 @@ class _ExpenseChartScreenState extends State<ExpenseChartScreen> {
       }
 
       yearlyData.forEach((year, amount) {
-        barChartData.add(
-          BarChartGroupData(
-            x: year,
-            barRods: [
-              BarChartRodData(
-                toY: amount,
-                color: Colors.blueAccent,
-                width: 15,
-                borderRadius: BorderRadius.circular(30),
-              ),
-            ],
-            // showingTooltipIndicators: [0],
-          ),
-        );
+        lineChartData.add(FlSpot(year.toDouble(), amount));
         titles.add(year.toString());
         maxY = maxY < amount ? amount : maxY;
       });
     }
 
-    return {'barChartData': barChartData, 'titles': titles, 'maxY': maxY};
+    return {'lineChartData': lineChartData, 'titles': titles, 'maxY': maxY};
   }
 
   String _monthName(int month) {
@@ -228,12 +180,12 @@ class _ExpenseChartScreenState extends State<ExpenseChartScreen> {
             const EdgeInsets.only(left: 16, right: 16, bottom: 20, top: 16),
         child: Column(
           children: [
-            // Descripción arriba del gráfico
+            // Descripción
             Text(
               widget.isIncome
-                  ? 'El gráfico a continuación muestra la evolución de los ingresos en función del periodo seleccionado.'
-                  : 'El gráfico a continuación muestra la evolución de los gastos en función del periodo seleccionado.',
-              style: TextStyle(
+                  ? 'El gráfico muestra la evolución de los ingresos.'
+                  : 'El gráfico muestra la evolución de los gastos.',
+              style: const TextStyle(
                 color: Colors.white,
                 fontSize: 16,
                 fontWeight: FontWeight.w400,
@@ -266,8 +218,8 @@ class _ExpenseChartScreenState extends State<ExpenseChartScreen> {
             ),
             const SizedBox(height: 16),
             Expanded(
-              child: BarChart(
-                BarChartData(
+              child: LineChart(
+                LineChartData(
                   titlesData: FlTitlesData(
                     leftTitles: AxisTitles(
                       sideTitles: SideTitles(
@@ -285,24 +237,20 @@ class _ExpenseChartScreenState extends State<ExpenseChartScreen> {
                         },
                       ),
                     ),
-                    rightTitles:
-                        AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                    topTitles:
-                        AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                    rightTitles: const AxisTitles(
+                        sideTitles: SideTitles(showTitles: false)),
+                    topTitles: const AxisTitles(
+                        sideTitles: SideTitles(showTitles: false)),
                     bottomTitles: AxisTitles(
                       sideTitles: SideTitles(
                         showTitles: true,
                         getTitlesWidget: (value, meta) {
-                          // final label = value.toInt().toString();
-
                           final label = (data["titles"] as List<String>)
-                                  .where((element) => element
-                                      .contains(value.toInt().toString()))
-                                  .firstOrNull ??
-                              (data["titles"] as List).firstOrNull.toString();
-
+                              .where((element) =>
+                                  element.contains(value.toInt().toString()))
+                              .firstOrNull;
                           return Text(
-                            label,
+                            label ?? '',
                             style: const TextStyle(
                                 color: Colors.white, fontSize: 12),
                           );
@@ -310,10 +258,19 @@ class _ExpenseChartScreenState extends State<ExpenseChartScreen> {
                       ),
                     ),
                   ),
-                  // gridData: FlGridData(show: false),
                   borderData: FlBorderData(show: false),
-                  barGroups: data['barChartData'],
+                  lineBarsData: [
+                    LineChartBarData(
+                      spots: data['lineChartData'],
+                      isCurved: true,
+                      color: Colors.blueAccent,
+                      barWidth: 4,
+                      isStrokeCapRound: true,
+                      belowBarData: BarAreaData(show: false),
+                    ),
+                  ],
                   maxY: data['maxY'] + 100,
+                  minY: 0,
                 ),
               ),
             ),

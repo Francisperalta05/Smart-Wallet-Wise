@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../models/transaction.dart';
 import '../services/database_helper.dart';
@@ -10,6 +9,8 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
   final DatabaseHelper _dbHelper = DatabaseHelper.instance;
 
   TransactionBloc() : super(TransactionInitial()) {
+    // Inicializar el servicio de notificaciones
+
     // Asociar eventos con sus métodos
     on<LoadTransactions>(_onLoadTransactions);
     on<AddTransaction>(_onAddTransaction);
@@ -33,9 +34,9 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       AddTransaction event, Emitter<TransactionState> emit) async {
     try {
       await _dbHelper.addTransaction(event.transaction);
+
       emit(TransactionAdded());
-      Future.delayed(Durations.medium4, () => add(LoadTransactions()));
-      // Recargar las transacciones después de agregar
+      add(LoadTransactions()); // Recargar las transacciones después de agregar
     } catch (e) {
       emit(TransactionError('Error al agregar la transacción. $e'));
     }
