@@ -1,0 +1,135 @@
+name: Deploy Polux Suite
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    # env:
+    #   KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+    #   KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+    #   KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+
+    steps:
+        
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.24.4'
+          
+      - name: Install Dart SDK
+        run: |
+          sudo apt-get update
+          sudo apt-get install apt-transport-https
+          sudo sh -c 'wget -qO- https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add -'
+          sudo sh -c 'wget -qO- https://storage.googleapis.com/download.dartlang.org/linux/debian/dart_stable.list > /etc/apt/sources.list.d/dart_stable.list'
+          sudo apt-get update
+          sudo apt-get install dart
+
+      - name: Verify Dart SDK installation
+        run: dart --version
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'adopt'
+          java-version: '17'
+    
+      - name: Check Java version
+        run: java -version
+        
+      - name: Clean dependencies
+        run: flutter clean
+        working-directory: smart_wallet_wise
+
+      - name: Install dependencies
+        run: flutter pub get
+        working-directory: smart_wallet_wise
+
+      - name: Build APK
+        run: flutter build apk --split-per-abi
+        working-directory: smart_wallet_wise
+
+      - name: Build AAB
+        run: flutter build appbundle
+        working-directory: smart_wallet_wise
+
+      - name: Generate tag name
+        id: tag
+        uses: actions/github-script@v6
+        with:
+          result-encoding: string
+          script: |
+            const now = new Date();
+            const buildNumber = parseInt(process.env.GITHUB_RUN_ID || "1");
+            const tagName = `${now.getFullYear()}${(now.getMonth() + 1).toString().padStart(2, "0")}${now.getDate().toString().padStart(2, "0")}-${now.getHours().toString().padStart(2, "0")}${now.getMinutes().toString().padStart(2, "0")}${now.getSeconds().toString().padStart(2, "0")}.${buildNumber}`;
+            console.log(tagName);
+            return tagName
+
+      - name: Create Release
+        id: create_release
+        uses: marvinpinto/action-automatic-releases@latest
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          tag_name: ${{ steps.tag.outputs.result }}
+          title: Release ${{ steps.tag.outputs.result }}
+          automatic_release_tag: "latest"
+          draft: false
+          prerelease: false
+
+      - name: Upload AAB artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: smart_wallet_wise AAB
+          path: smart_wallet_wise/build/app/outputs/bundle/release/
+
+      - name: Upload Release AAB Asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_name: app-release.aab
+          asset_content_type: application/octet-stream
+          asset_path: smart_wallet_wise/build/app/outputs/bundle/release/app-release.aab
+
+      - name: Upload APK artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: smart_wallet_wise APK
+          path: smart_wallet_wise/build/app/outputs/flutter-apk/
+
+      - name: Upload Release APK Asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_name: app-x86_64-release.apk
+          asset_content_type: application/octet-stream
+          asset_path: smart_wallet_wise/build/app/outputs/flutter-apk/app-x86_64-release.apk
+
+      - name: Build iOS App
+        run: flutter build ipa --release
+
+      # - name: Set up iOS certificates and provisioning profile
+      #   run: |
+      #     echo ${{ secrets.DISTRIBUTION_CERTIFICATE }} | base64 --decode > ios/Certificates.p12
+      #     echo ${{ secrets.PROVISIONING_PROFILE }} | base64 --decode > ios/ProvisioningProfile.mobileprovision
+
+      # - name: Upload to TestFlight
+      #   uses: appleboy/app-store-release-action@v0.5.2
+      #   with:
+      #     api_key: ${{ secrets.APP_STORE_CONNECT_API_KEY }}
+      #     api_issuer: <API_ISSUER_ID>
+      #     ipa_path: smart_wallet_wise/build/ios/ipa/*.ipa
+      #     bundle_id: com.poluxsuite.app
+      #     submit_for_review: false
+      #     skip_waiting_for_build_processing: true
