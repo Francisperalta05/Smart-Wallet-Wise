@@ -1,4 +1,4 @@
-name: Deploy Polux Suite
+name: Deploy Smart Wallet Wise
 
 on:
   workflow_dispatch:
