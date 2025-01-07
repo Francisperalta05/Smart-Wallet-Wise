@@ -23,7 +23,7 @@ class TransactionList extends StatelessWidget {
         preferredSize: Size.fromHeight(50.h),
         child: AppBar(
           flexibleSpace: Container(
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               gradient: LinearGradient(
                 colors: [Color(0xFF263238), Color(0xFF303030)],
                 begin: Alignment.topLeft,
@@ -46,11 +46,11 @@ class TransactionList extends StatelessWidget {
         children: [
           // Fondo con degradado blanco
           Container(
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               gradient: LinearGradient(
                 colors: [
                   Colors.black,
-                  const Color(0xFF212121),
+                  Color(0xFF212121),
                   Color(0xFF424242)
                 ],
                 begin: Alignment.topLeft,
@@ -69,7 +69,7 @@ class TransactionList extends StatelessWidget {
                         .fold(0.0, (sum, item) => sum + item.amount);
 
                     return Container(
-                      padding: EdgeInsets.all(20.0),
+                      padding: const EdgeInsets.all(20.0),
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
                           colors: [Colors.blueGrey[900]!, Colors.grey[850]!],
@@ -77,8 +77,8 @@ class TransactionList extends StatelessWidget {
                           end: Alignment.bottomRight,
                         ),
                         borderRadius:
-                            BorderRadius.vertical(bottom: Radius.circular(30)),
-                        boxShadow: [
+                            const BorderRadius.vertical(bottom: Radius.circular(30)),
+                        boxShadow: const [
                           BoxShadow(
                             color: Colors.black54,
                             blurRadius: 10,
@@ -115,7 +115,7 @@ class TransactionList extends StatelessWidget {
                                     context,
                                     MaterialPageRoute(
                                       builder: (context) =>
-                                          ExpenseChartScreen(isIncome: true),
+                                          const ExpenseChartScreen(isIncome: true),
                                     ),
                                   );
                                 },
@@ -132,7 +132,7 @@ class TransactionList extends StatelessWidget {
                                     context,
                                     MaterialPageRoute(
                                       builder: (context) =>
-                                          ExpenseChartScreen(isIncome: false),
+                                          const ExpenseChartScreen(isIncome: false),
                                     ),
                                   );
                                 },
@@ -149,7 +149,7 @@ class TransactionList extends StatelessWidget {
                       ),
                     );
                   }
-                  return CircularProgressIndicator.adaptive();
+                  return const CircularProgressIndicator.adaptive();
                 },
               ),
               SizedBox(height: 20.h),
@@ -172,7 +172,7 @@ class TransactionList extends StatelessWidget {
                           // Descripción truncada
                           String description = transaction.description.length >
                                   50
-                              ? transaction.description.substring(0, 50) + '...'
+                              ? '${transaction.description.substring(0, 50)}...'
                               : transaction.description;
 
                           return Card(
@@ -203,7 +203,7 @@ class TransactionList extends StatelessWidget {
                                         ? Colors.deepOrange
                                         : Colors.blueAccent,
                                     shape: BoxShape.circle,
-                                    boxShadow: [
+                                    boxShadow: const [
                                       BoxShadow(
                                         color: Colors.black45,
                                         blurRadius: 10,
@@ -260,7 +260,7 @@ class TransactionList extends StatelessWidget {
                                       ),
                                     ),
                                     IconButton(
-                                      icon: Icon(
+                                      icon: const Icon(
                                         Icons.delete,
                                         color: Colors.grey,
                                       ),
@@ -279,7 +279,7 @@ class TransactionList extends StatelessWidget {
                     } else if (state is TransactionError) {
                       return Center(child: Text(state.message));
                     } else {
-                      return Center(child: CircularProgressIndicator());
+                      return const Center(child: CircularProgressIndicator());
                     }
                   },
                 ),
@@ -311,7 +311,7 @@ class TransactionList extends StatelessWidget {
             ),
           ),
           child: Padding(
-            padding: EdgeInsets.all(14.0),
+            padding: const EdgeInsets.all(14.0),
             child: Icon(
               Icons.add,
               size: 28.w,
@@ -332,18 +332,18 @@ class TransactionList extends StatelessWidget {
       builder: (context) {
         return Platform.isAndroid
             ? AlertDialog(
-                title: Text("Eliminar Transacción"),
-                content: Text(
+                title: const Text("Eliminar Transacción"),
+                content: const Text(
                     "¿Estás seguro de que deseas eliminar esta transacción?"),
                 actions: <Widget>[
                   TextButton(
-                    child: Text("Cancelar"),
+                    child: const Text("Cancelar"),
                     onPressed: () {
                       Navigator.of(context).pop();
                     },
                   ),
                   TextButton(
-                    child: Text("Eliminar"),
+                    child: const Text("Eliminar"),
                     onPressed: () {
                       // Aquí deberías implementar la lógica para eliminar la transacción
                       Navigator.of(context).pop();
@@ -352,18 +352,18 @@ class TransactionList extends StatelessWidget {
                 ],
               )
             : CupertinoAlertDialog(
-                title: Text("Eliminar Transacción"),
-                content: Text(
+                title: const Text("Eliminar Transacción"),
+                content: const Text(
                     "¿Estás seguro de que deseas eliminar esta transacción?"),
                 actions: <Widget>[
                   CupertinoDialogAction(
-                    child: Text("Cancelar"),
+                    child: const Text("Cancelar"),
                     onPressed: () {
                       Navigator.of(context).pop();
                     },
                   ),
                   CupertinoDialogAction(
-                    child: Text("Eliminar"),
+                    child: const Text("Eliminar"),
                     onPressed: () {
                       // Implementa la lógica para eliminar la transacción aquí
                       Navigator.of(context).pop();
@@ -385,11 +385,11 @@ class TransactionList extends StatelessWidget {
       onTap: onTap,
       child: Container(
         width: 150.w,
-        padding: EdgeInsets.all(15),
+        padding: const EdgeInsets.all(15),
         decoration: BoxDecoration(
           color: Colors.grey[900],
           borderRadius: BorderRadius.circular(15),
-          boxShadow: [
+          boxShadow: const [
             BoxShadow(
               color: Colors.black26,
               blurRadius: 10,
