@@ -1,0 +1,2 @@
+/Users/pc-admin/Documents/AngelPeralta/smart_wallet_wise/android/app/.cxx/RelWithDebInfo/t1xd1912/arm64-v8a/CMakeFiles/edit_cache.dir
+/Users/pc-admin/Documents/AngelPeralta/smart_wallet_wise/android/app/.cxx/RelWithDebInfo/t1xd1912/arm64-v8a/CMakeFiles/rebuild_cache.dir

@@ -1,0 +1,20 @@
+{
+  "buildFiles": [
+    "/Users/pc-admin/Documents/flutter/packages/flutter_tools/gradle/src/main/groovy/CMakeLists.txt"
+  ],
+  "cleanCommandsComponents": [
+    [
+      "/Users/pc-admin/Library/Android/sdk/cmake/3.22.1/bin/ninja",
+      "-C",
+      "/Users/pc-admin/Documents/AngelPeralta/smart_wallet_wise/android/app/.cxx/RelWithDebInfo/t1xd1912/x86_64",
+      "clean"
+    ]
+  ],
+  "buildTargetsCommandComponents": [
+    "/Users/pc-admin/Library/Android/sdk/cmake/3.22.1/bin/ninja",
+    "-C",
+    "/Users/pc-admin/Documents/AngelPeralta/smart_wallet_wise/android/app/.cxx/RelWithDebInfo/t1xd1912/x86_64",
+    "{LIST_OF_TARGETS_TO_BUILD}"
+  ],
+  "libraries": {}
+}
